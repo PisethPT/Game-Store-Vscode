@@ -1,0 +1,36 @@
+GET http://localhost:5036/Games
+Content-Type: application/json
+
+###
+GET https://l46pccp6-5036.asse.devtunnels.ms/Games
+
+
+###
+
+POST http://localhost:5036/Games/Post
+Content-Type: application/json
+ 
+###
+
+POST https://l46pccp6-5036.asse.devtunnels.ms/Games/PostGame
+Content-Type: application/json
+
+{
+    "title": "Mario Family II",
+    "description": "Family and Children",
+    "price": 29.99,
+    "image": "D:\\Http Iniz\\Products\breed-dry-dog-food\breed-dry-dog-food.jpg"
+}
+
+
+###
+
+POST https://l46pccp6-5036.asse.devtunnels.ms/Games/PostGameWithImage
+Content-Type: application/json
+
+{
+    "title": "Mario Family II",
+    "description": "Family and Children",
+    "price": 29.99,
+    "image": "D:\\Http Iniz\\Products\breed-dry-dog-food\breed-dry-dog-food.jpg"
+}
