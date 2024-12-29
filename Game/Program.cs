@@ -64,8 +64,11 @@ group.MapPost("/Games/PostGame", async (IFormFile image, [FromForm] Games newGam
 		{
 			gamesList = new List<Games>();
 		}
+		await context.Games.AddAsync(newGame);
+		await context.SaveChangesAsync();
 
 		gamesList.Add(newGame);
+
 
 		// Serialize the updated list back to JSON
 		var updatedJsonData = JsonSerializer.Serialize(gamesList, new JsonSerializerOptions { WriteIndented = true });
@@ -73,8 +76,6 @@ group.MapPost("/Games/PostGame", async (IFormFile image, [FromForm] Games newGam
 		// Write the updated JSON back to the file
 		await File.WriteAllTextAsync(jsonFilePath, updatedJsonData);
 
-		await context.Games.AddAsync(newGame);
-		await context.SaveChangesAsync();
 	}
 
 	return Results.Ok(newGame);

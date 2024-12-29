@@ -5,5 +5,12 @@
     "Description": "Family and Childrenn",
     "Price": 19.98,
     "Image": "/Resources/563abb3f-1cb9-4282-8b64-c661df820750.png"
+  },
+  {
+    "Id": 0,
+    "Title": "FIFA 2025",
+    "Description": "Sport Game",
+    "Price": 45.99,
+    "Image": "/Resources/1e11e4cf-011b-40b6-b1c6-0dd076e8a12c.png"
   }
 ]
