@@ -1,0 +1,24 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@Base_Url = https://localhost:7182
+# @Base_Url = https://l46pccp6-7182.asse.devtunnels.ms
+
+GET https://lm640mhq-7182.asse.devtunnels.ms/Games
+Accept: application/json
+
+###
+
+
+GET {{Base_Url}}/Games
+Accept: application/json
+
+
+###
+POST {{Base_Url}}/Games/PostGame
+Accept: application/json
+
+{
+   "title": "Mario",
+   "description": "Family and Children",
+   "price": 10.99,
+   "image": "img.png"
+}

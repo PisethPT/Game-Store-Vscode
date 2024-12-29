@@ -3,6 +3,7 @@ using Game.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultSQLite");
@@ -30,52 +31,53 @@ group.MapGet("/Games", async (Context context) =>
     return Results.Ok(games.OrderByDescending(g => g.Id));
 });
 
-//group.MapPost("/Games/Post", async (Context context) =>
-//{
-//    Games newGame = new Games()
-//    {
-//        Title = "FIFA 2025",
-//        Description = "FIFA 2025 Football Sport.",
-//        Price = 49.99M,
-//        Image = "image.png"
-//    };
-//    await context.Games.AddAsync(newGame);
-//    await context.SaveChangesAsync();
-//    return Results.Created();
-//});
-
-//group.MapPost("/Games/PostGame", async (Games newGame, Context context) =>
-//{
-//    await context.Games.AddAsync(newGame);
-//    await context.SaveChangesAsync();
-//    return Results.Created();
-//});
-
 group.MapPost("/Games/PostGame", async (IFormFile image, [FromForm] Games newGame, Context context) =>
 {
-    if (image != null && image.Length > 0)
-    {
-        var uploadsPath = Path.Combine(builder.Environment.WebRootPath, "Images");
+	if (image != null && image.Length > 0)
+	{
+		var uploadsPath = Path.Combine(builder.Environment.WebRootPath, "Images");
 
-        if (!Directory.Exists(uploadsPath))
-        {
-            Directory.CreateDirectory(uploadsPath);
-        }
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-        var filePath = Path.Combine(uploadsPath, fileName);
+		if (!Directory.Exists(uploadsPath))
+		{
+			Directory.CreateDirectory(uploadsPath);
+		}
 
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
-        {
-            await image.CopyToAsync(fileStream);
-        }
+		var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+		var filePath = Path.Combine(uploadsPath, fileName);
 
-        newGame.Image = "/Resources/" + fileName;
+		using (var fileStream = new FileStream(filePath, FileMode.Create))
+		{
+			await image.CopyToAsync(fileStream);
+		}
 
-        await context.Games.AddAsync(newGame);
-        await context.SaveChangesAsync();
-    }
+		newGame.Image = "/Resources/" + fileName;
 
-    return Results.Ok(newGame);
+		var jsonFilePath = Path.Combine(builder.Environment.ContentRootPath, "data.json");
+
+		List<Games> gamesList;
+		if (File.Exists(jsonFilePath))
+		{
+			var jsonData = await File.ReadAllTextAsync(jsonFilePath);
+			gamesList = JsonSerializer.Deserialize<List<Games>>(jsonData) ?? new List<Games>();
+		}
+		else
+		{
+			gamesList = new List<Games>();
+		}
+
+		gamesList.Add(newGame);
+
+		// Serialize the updated list back to JSON
+		var updatedJsonData = JsonSerializer.Serialize(gamesList, new JsonSerializerOptions { WriteIndented = true });
+
+		// Write the updated JSON back to the file
+		await File.WriteAllTextAsync(jsonFilePath, updatedJsonData);
+
+		await context.Games.AddAsync(newGame);
+		await context.SaveChangesAsync();
+	}
+
+	return Results.Ok(newGame);
 });
 
 await app.MigrateDbAsync();
